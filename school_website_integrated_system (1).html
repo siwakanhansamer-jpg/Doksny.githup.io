@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โรงเรียนบ้านกรูดหนองซำ - ระบบบริหารจัดการเว็บไซต์</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #00509e;
+            --accent-color: #ffcc00;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --dark-bg: #1e293b;
+        }
+        
+        body {
+            font-family: 'Sarabun', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* --- ยูทิลิตี้การสลับหน้าจอ (Views) --- */
+        .view-section {
+            display: none;
+        }
+        .view-section.active {
+            display: block;
+        }
+
+        /* --- ส่วนของหน้าเว็บปกติ (VISITOR VIEW) --- */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+        }
+        
+        .logo {
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .logo-container h2 {
+            margin: 0;
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+        
+        .nav-menu {
+            display: flex;
+            height: 100%;
+            align-items: center;
+        }
+        
+        .nav-menu > a, .dropdown > button {
+            background: none;
+            border: none;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            font-family: inherit;
+            padding: 0 20px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-menu > a:hover, .dropdown:hover > button {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-login-nav {
+            background-color: var(--accent-color) !important;
+            color: #111 !important;
+            height: 40px !important;
+            padding: 0 15px !important;
+            border-radius: 20px;
+            margin-left: 15px;
+            font-weight: bold !important;
+        }
+        .btn-login-nav:hover {
+            background-color: #e6b800 !important;
+        }
+        
+        /* Dropdown */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            height: 100%;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 220px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 0 0 8px 8px;
+            overflow: hidden;
+            top: 100%;
+            left: 0;
+        }
+        
+        .dropdown-content a {
+            color: var(--text-color);
+            padding: 12px 20px;
+            text-decoration: none;
+            display: block;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+            color: var(--secondary-color);
+        }
+        
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        /* Hero Banner */
+        .hero {
+            background: linear-gradient(135deg, rgba(0,51,102,0.9), rgba(0,120,215,0.8)), url('https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&q=80&w=1920') no-repeat center center/cover;
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+        }
+        
+        .hero h1 { font-size: 3.5em; margin-bottom: 15px; }
+        .hero p { font-size: 1.3em; max-width: 800px; margin: 0 auto; }
+        
+        /* Layout Grid */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 30px;
+        }
+        
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+        
+        .card h2 {
+            border-left: 5px solid var(--primary-color);
+            padding-left: 15px;
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        /* --- สไตล์แสดงผลกล่องข่าวสารฝั่งผู้ใช้ยืดหยุ่นรองรับรูปภาพ --- */
+        .news-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .news-item-card {
+            display: flex;
+            gap: 20px;
+            padding: 12px;
+            border-bottom: 1px dashed #cbd5e1;
+            align-items: flex-start;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border-radius: 8px;
+        }
+
+        .news-item-card:hover {
+            background-color: #f0f4f8;
+            transform: translateY(-2px);
+        }
+
+        .news-item-card:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .news-card-img {
+            width: 160px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 8px;
+            background-color: #e2e8f0;
+            flex-shrink: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .news-card-content {
+            flex: 1;
+        }
+
+        .news-card-content h3 {
+            margin: 0 0 8px 0;
+            color: var(--primary-color);
+            font-size: 1.2em;
+        }
+
+        .news-card-content p {
+            margin: 0;
+            color: #555;
+            font-size: 0.95em;
+            white-space: pre-line;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* ปุ่มกิจกรรมอื่นๆ */
+        .more-activities-btn {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 80, 158, 0.2);
+        }
+
+        .more-activities-btn:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 51, 102, 0.3);
+        }
+
+        /* --- สไตล์ของ POP-UP (Modal) สำหรับแสดงรูปภาพและเนื้อหาฉบับเต็ม --- */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-content-box {
+            background-color: white;
+            border-radius: 16px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: modalFadeOpen 0.3s ease-out;
+        }
+
+        @keyframes modalFadeOpen {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .close-modal-x {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 32px;
+            font-weight: bold;
+            color: #64748b;
+            cursor: pointer;
+            transition: color 0.2s;
+            z-index: 10;
+        }
+
+        .close-modal-x:hover { color: #0f172a; }
+
+        .modal-inner-body { padding: 35px; }
+
+        .modal-full-img {
+            width: 100%;
+            max-height: 450px;
+            object-fit: contain;
+            border-radius: 12px;
+            background-color: #f1f5f9;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .modal-inner-body h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            font-size: 1.8em;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .modal-inner-body p {
+            font-size: 1.1em;
+            color: #334155;
+            white-space: pre-line;
+            line-height: 1.8;
+            margin-top: 15px;
+        }
+        
+        .ita-btn {
+            display: block;
+            background: var(--accent-color);
+            color: #111;
+            padding: 20px;
+            text-align: center;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.4em;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(255, 204, 0, 0.4);
+            margin-bottom: 25px;
+        }
+        
+        .director-profile { text-align: center; }
+        .director-img {
+            width: 130px; 
+            height: 160px; 
+            background-color: #ddd;
+            margin: 0 auto 15px auto; 
+            border-radius: 8px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: #777;
+            border: 3px solid #eee;
+            object-fit: cover;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 60px;
+            border-top: 5px solid var(--accent-color);
+        }
+
+        /* --- หน้าเข้าสู่ระบบ (LOGIN VIEW) --- */
+        .login-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 140px);
+            padding: 20px;
+        }
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-card h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 15px;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Sarabun', sans-serif;
+            transition: background 0.2s;
+        }
+        .btn-submit:hover { background-color: var(--secondary-color); }
+        .error-msg { color: var(--danger-color); font-size: 14px; margin-top: 10px; display: none; text-align: center;}
+
+        /* --- หน้าจัดการแอดมิน (ADMIN DASHBOARD VIEW) --- */
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+        }
+        .admin-sidebar {
+            background-color: var(--dark-bg);
+            color: white;
+            padding: 20px;
+            position: relative;
+        }
+        .admin-sidebar h3 {
+            color: var(--accent-color);
+            margin-top: 0;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #334155;
+            font-size: 1.2em;
+        }
+        .admin-menu-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        .admin-menu-list li {
+            padding: 12px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .admin-menu-list li.active, .admin-menu-list li:hover {
+            background-color: var(--secondary-color);
+        }
+        .admin-main {
+            background-color: #f1f5f9;
+            padding: 40px;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .admin-header h2 { margin: 0; color: #0f172a; }
+        
+        /* ตารางและฟอร์มสำหรับหลังบ้าน */
+        .admin-panel-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        /* ฟอร์มกรอกข้อมูลข่าวสาร */
+        .news-form-container {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .admin-table th, .admin-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #cbd5e1;
+        }
+        .admin-table th { background-color: #f8fafc; color: #334155; }
+        
+        .btn-action {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Sarabun', sans-serif;
+            font-weight: 500;
+        }
+        .btn-action.add { background-color: var(--success-color); color: white; margin-bottom: 15px;}
+        .btn-action.edit { background-color: var(--accent-color); color: #111; margin-right: 5px;}
+        .btn-action.delete { background-color: var(--danger-color); color: white; }
+        .btn-action.cancel { background-color: #94a3b8; color: white; margin-left: 5px; }
+        .btn-action.view-site { background-color: #64748b; color: white; }
+
+        @media (max-width: 900px) {
+            .container { grid-template-columns: 1fr; }
+            .nav-menu { display: none; }
+            .admin-layout { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="view-visitor" class="view-section active">
+    <header>
+        <div class="logo-container" onclick="switchView('visitor')">
+            <div class="logo">สกร.</div>
+            <h2 class="dynamic-school-name">โรงเรียนบ้านกรูดหนองซำ</h2>
+        </div>
+        <nav class="nav-menu">
+            <a href="#" onclick="switchView('visitor')">หน้าแรก</a>
+            <a href="#">ข้อมูลทั่วไป</a>
+            <div class="dropdown">
+                <button>กิจกรรมของโรงเรียน ▾</button>
+                <div class="dropdown-content">
+                    <a href="#" onclick="switchView('activities')">กิจกรรมทั้งหมด</a>
+                    <a href="#">ปีการศึกษา 2569</a>
+                    <a href="#">ปีการศึกษา 2568</a>
+                    <a href="#">ปีการศึกษา 2567</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <button>ITA ▾</button>
+                <div class="dropdown-content">
+                    <a href="#">ITA 2568</a>
+                    <a href="#">ITA 2567</a>
+                </div>
+            </div>
+            <button class="btn-login-nav" onclick="switchView('login')">🔒 เข้าสู่ระบบ Admin</button>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1 class="dynamic-hero-title">ยินดีต้อนรับสู่เว็บไซต์</h1>
+        <p class="dynamic-hero-desc">โรงเรียนบ้านกรูดหนองซำ สังกัดสำนักงานเขตพื้นที่การศึกษาประถมศึกษา มุ่งมั่นพัฒนาผู้เรียนสู่ความเป็นเลิศ ควบคู่คุณธรรม</p>
+    </section>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="card">
+                <h2>ข่าวประชาสัมพันธ์ล่าสุด</h2>
+                <div class="news-container" id="public-news-list">
+                    </div>
+                <div id="more-activities-container" style="text-align: center;">
+                    </div>
+            </div>
+            
+            <div class="card">
+                <h2>การประเมินคุณธรรมและความโปร่งใส (ITA)</h2>
+                <p class="dynamic-ita-intro">การเปิดเผยข้อมูลสาธารณะ (Open Data Integrity and Transparency Assessment: OIT) เพื่อยกระดับความโปร่งใสของหน่วยงาน</p>
+            </div>
+        </div>
+        
+        <div class="sidebar">
+            <a href="#" class="ita-btn">⭐ ITA 2568</a>
+            
+            <div class="card">
+                <h2>ข้อมูลผู้บริหาร</h2>
+                <div class="director-profile">
+                    <div id="dynamic-dir-img-container"></div>
+                    <h3 class="dynamic-dir-name">นายสมชาย ใจดี</h3>
+                    <p class="dynamic-dir-pos">ผู้อำนวยการโรงเรียน<br>โรงเรียนบ้านกรูดหนองซำ</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p><strong class="dynamic-school-name">โรงเรียนบ้านกรูดหนองซำ</strong></p>
+        <p>&copy; 2026 สงวนลิขสิทธิ์ | <span style="cursor:pointer; text-decoration:underline;" onclick="switchView('login')">เข้าสู่หลังบ้าน</span></p>
+    </footer>
+</div>
+
+<div id="view-activities" class="view-section">
+    <header>
+        <div class="logo-container" onclick="switchView('visitor')">
+            <div class="logo">สกร.</div>
+            <h2 class="dynamic-school-name">โรงเรียนบ้านกรูดหนองซำ</h2>
+        </div>
+        <nav class="nav-menu">
+            <a href="#" onclick="switchView('visitor')">หน้าแรก</a>
+            <button class="btn-action view-site" style="margin-left: 20px;" onclick="switchView('visitor')">🏠 กลับหน้าหลัก</button>
+        </nav>
+    </header>
+
+    <div class="container" style="grid-template-columns: 1fr;">
+        <div class="card">
+            <h2>ข่าวประชาสัมพันธ์ & กิจกรรมทั้งหมดของโรงเรียน</h2>
+            <div class="news-container" id="all-activities-news-list">
+                </div>
+        </div>
+    </div>
+
+    <footer>
+        <p><strong class="dynamic-school-name">โรงเรียนบ้านกรูดหนองซำ</strong></p>
+        <p>&copy; 2026 สงวนลิขสิทธิ์</p>
+    </footer>
+</div>
+
+<div id="news-reader-modal" class="custom-modal" onclick="closeNewsModal(event)">
+    <div class="modal-content-box">
+        <span class="close-modal-x" onclick="document.getElementById('news-reader-modal').style.display='none'">&times;</span>
+        <div class="modal-inner-body">
+            <div id="modal-image-area"></div>
+            <h2 id="modal-news-title">หัวข้อข่าวกิจกรรม</h2>
+            <p id="modal-news-desc">เนื้อหาและรายละเอียดแบบเต็ม</p>
+        </div>
+    </div>
+</div>
+
+<div id="view-login" class="view-section">
+    <header>
+        <div class="logo-container" onclick="switchView('visitor')">
+            <div class="logo">สกร.</div>
+            <h2 class="dynamic-school-name">โรงเรียนบ้านกรูดหนองซำ</h2>
+        </div>
+        <button class="btn-action view-site" style="margin-right:40px;" onclick="switchView('visitor')">🏠 กลับหน้าหลัก</button>
+    </header>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+            <h2>แผงควบคุมแอดมิน</h2>
+            <div class="form-group">
+                <label for="input-username">Username</label>
+                <input type="text" id="input-username" placeholder="ระบุชื่อผู้ใช้งาน">
+            </div>
+            <div class="form-group">
+                <label for="input-password">Password</label>
+                <input type="password" id="input-password" placeholder="ระบุรหัสผ่าน">
+            </div>
+            <div id="login-error-msg" class="error-msg">❌ ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
+            <button class="btn-submit" style="margin-top:15px;" onclick="handleLogin()">ยืนยันเข้าสู่ระบบ</button>
+        </div>
+    </div>
+</div>
+
+
+<div id="view-admin" class="view-section">
+    <div class="admin-layout">
+        <div class="admin-sidebar">
+            <h3>Nonsang Admin Panel</h3>
+            <ul class="admin-menu-list">
+                <li class="active" onclick="switchAdminTab('news')">📢 จัดการข่าวสาร</li>
+                <li onclick="switchAdminTab('info')">🏫 ข้อมูลโรงเรียน & ผู้บริหาร</li>
+            </ul>
+            <div style="position:absolute; bottom:20px; width:220px;">
+                <button class="btn-submit" style="background-color:var(--danger-color);" onclick="handleLogout()">Logout ออกจากระบบ</button>
+            </div>
+        </div>
+
+        <div class="admin-main">
+            <div class="admin-header">
+                <h2>ระบบบริหารจัดการเนื้อหาเว็บไซต์</h2>
+                <button class="btn-action view-site" onclick="switchView('visitor')">👁️ ดูหน้าเว็บจริง</button>
+            </div>
+
+            <div id="admin-tab-news" class="admin-tab-content">
+                <div class="admin-panel-card">
+                    <h3>รายการข่าวประชาสัมพันธ์ปัจจุบัน (เพิ่มได้ไม่จำกัด)</h3>
+                    <button class="btn-action add" onclick="openNewsForm(-1)">➕ เพิ่มข่าวประชาสัมพันธ์ใหม่</button>
+                    
+                    <div id="news-form-block" class="news-form-container" style="display:none;">
+                        <h4 id="form-action-title" style="margin-top:0; color:var(--primary-color);">เพิ่มข้อมูลข่าวสาร</h4>
+                        <input type="hidden" id="edit-news-index" value="-1">
+                        
+                        <div class="form-group">
+                            <label>ชื่อกิจกรรม / หัวข้อข่าวสาร</label>
+                            <input type="text" id="news-title-input" placeholder="ระบุชื่อกิจกรรมหลักที่นี่">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>ข้อความรายละเอียดกิจกรรม</label>
+                            <textarea id="news-desc-input" rows="4" placeholder="ระบุรายละเอียดโครงการ วัน เวลา สถานที่ หรือเนื้อหาข่าวประชาสัมพันธ์"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>รูปภาพประกอบกิจกรรม</label>
+                            <input type="file" id="news-img-input" accept="image/*" onchange="processAndPreviewImage(event, 'news')">
+                            <div style="margin-top: 10px;">
+                                <img id="news-img-preview" src="" style="max-width:240px; display:none; border-radius:6px; border:1px solid #ddd;">
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top:20px;">
+                            <button class="btn-action add" style="margin-bottom:0;" onclick="saveNewsItem()">💾 บันทึกข้อมูลข่าว</button>
+                            <button class="btn-action cancel" onclick="closeNewsForm()">ยกเลิก</button>
+                        </div>
+                    </div>
+
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%;">รูปภาพ</th>
+                                <th style="width: 55%;">หัวข้อและรายละเอียด</th>
+                                <th style="width: 25%; text-align: center;">เครื่องมือจัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-news-table-body">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="admin-tab-info" class="admin-tab-content" style="display:none;">
+                <div class="admin-panel-card">
+                    <h3>แก้ไขเนื้อหาข้อมูลหน้าแรก</h3>
+                    <div class="form-group">
+                        <label>ชื่อสถานศึกษา/หัวข้อเว็บ</label>
+                        <input type="text" id="edit-school-name">
+                    </div>
+                    <div class="form-group">
+                        <label>หัวข้อใหญ่แบนเนอร์ (Hero Title)</label>
+                        <input type="text" id="edit-hero-title">
+                    </div>
+                    <div class="form-group">
+                        <label>คำอธิบายแบนเนอร์ (Hero Description)</label>
+                        <input type="text" id="edit-hero-desc">
+                    </div>
+                    <div class="form-group">
+                        <label>คำแนะนำหน้า ITA</label>
+                        <input type="text" id="edit-ita-intro">
+                    </div>
+                    
+                    <hr style="margin: 30px 0; border: 0; border-top: 1px solid #cbd5e1;">
+                    
+                    <h3>👑 ข้อมูลและรูปภาพผู้บริหาร</h3>
+                    <div class="form-group">
+                        <label>ชื่อ-นามสกุล ผู้บริหาร</label>
+                        <input type="text" id="edit-dir-name" placeholder="ตัวอย่าง: นายสมชาย ใจดี">
+                    </div>
+                    <div class="form-group">
+                        <label>ตำแหน่ง</label>
+                        <input type="text" id="edit-dir-pos" placeholder="ตัวอย่าง: ผู้อำนวยการโรงเรียน">
+                    </div>
+                    <div class="form-group">
+                        <label>อัปโหลดรูปภาพประจำตัวผู้บริหาร</label>
+                        <input type="file" id="edit-dir-img-input" accept="image/*" onchange="processAndPreviewImage(event, 'director')">
+                        <div style="margin-top: 15px;">
+                            <img id="edit-dir-img-preview" src="" style="width:120px; height:150px; object-fit:cover; display:none; border-radius:6px; border:2px solid #cbd5e1;">
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 25px;">
+                        <button class="btn-submit" style="background-color:var(--success-color); width: auto; padding: 12px 30px;" onclick="saveSchoolInfo()">💾 บันทึกข้อมูลทั้งหมด</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // รูปภาพ Default จำลองสำหรับกิจกรรมแรกสุด
+    const defaultPlaceholderImg = "https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&q=80&w=600";
+
+    // ข้อมูลเริ่มต้นระบบข่าวสาร
+    const initialNews = [
+        {
+            title: "โครงการศูนย์ฝึกอาชีพชุมชน 10 ตำบล ประจำอำเภอโนนสัง",
+            desc: "สกร.ระดับอำเภอโนนสัง เดินหน้าจัดกิจกรรมอบรมอาชีพระยะสั้น มุ่งเน้นการฝึกทักษะที่ตรงกับความต้องการของพื้นที่ เพื่อยกระดับคุณภาพชีวิตและเพิ่มรายได้ให้แก่ประชาชนอย่างยั่งยืน",
+            img: defaultPlaceholderImg
+        },
+        {
+            title: "ประกาศรับสมัครนักเรียนใหม่ ประจำปีการศึกษา 2569",
+            desc: "โรงเรียนบ้านกรูดหนองซำเปิดรับสมัครนักเรียนเข้าศึกษาต่อในระดับชั้นต่างๆ ประจำปีการศึกษาใหม่ ผู้ปกครองที่สนใจสามารถติดต่อขอรับเอกสารได้ที่ห้องธุรการ",
+            img: ""
+        }
+    ];
+
+    // ข้อมูลข้อความเริ่มต้นระบบ
+    const initialTextConfig = {
+        schoolName: "โรงเรียนบ้านกรูดหนองซำ",
+        heroTitle: "ยินดีต้อนรับสู่เว็บไซต์",
+        heroDesc: "โรงเรียนบ้านกรูดหนองซำ สังกัดสำนักงานเขตพื้นที่การศึกษาประถมศึกษา มุ่งมั่นพัฒนาผู้เรียนสู่ความเป็นเลิศ ควบคู่คุณธรรม",
+        itaIntro: "การเปิดเผยข้อมูลสาธารณะ (Open Data Integrity and Transparency Assessment: OIT) เพื่อยกระดับความโปร่งใสของหน่วยงาน",
+        dirName: "นายสมชาย ใจดี",
+        dirPos: "ผู้อำนวยการโรงเรียน\nโรงเรียนบ้านกรูดหนองซำ",
+        dirImg: "" 
+    };
+
+    let uploadedImageBase64 = "";
+    let uploadedDirImageBase64 = "";
+
+    window.onload = function() {
+        initLocalStorage();
+        updateUIElements();
+        
+        if (sessionStorage.getItem('admin_session') === 'active') {
+            switchView('admin');
+        }
+    };
+
+    function initLocalStorage() {
+        if (!localStorage.getItem('news_data')) {
+            localStorage.setItem('news_data', JSON.stringify(initialNews));
+        }
+        if (!localStorage.getItem('text_config')) {
+            localStorage.setItem('text_config', JSON.stringify(initialTextConfig));
+        }
+    }
+
+    // ฟังก์ชันอัปเดตข้อมูลบนหน้าจอทั้งหมด
+    function updateUIElements() {
+        const news = JSON.parse(localStorage.getItem('news_data')) || [];
+        const config = JSON.parse(localStorage.getItem('text_config'));
+
+        // เรียงจากข่าวใหม่ล่าสุดไปเก่าสุด (เอาข่าวกิจกรรมใหม่โชว์ก่อน)
+        const sortedNews = [...news].reverse();
+
+        // 1. อัปเดตข่าวสารในหน้าผู้เยี่ยมชม (Visitor View) - จำกัดแสดงไม่เกิน 5 ข่าวล่าสุด
+        const publicList = document.getElementById('public-news-list');
+        publicList.innerHTML = '';
+        
+        const homepageNews = sortedNews.slice(0, 5);
+        homepageNews.forEach(item => {
+            const actualIndex = news.indexOf(item); // หาอินเด็กซ์จริงใน LocalStorage
+            const card = createNewsCardElement(item, actualIndex);
+            publicList.appendChild(card);
+        });
+
+        // จัดการแสดงผลปุ่ม "กิจกรรมอื่น ๆ"
+        const moreBtnContainer = document.getElementById('more-activities-container');
+        moreBtnContainer.innerHTML = '';
+        if (news.length > 5) {
+            const moreBtn = document.createElement('button');
+            moreBtn.className = 'more-activities-btn';
+            moreBtn.innerHTML = '📂 ดู กิจกรรมอื่น ๆ ทั้งหมด';
+            moreBtn.onclick = () => switchView('activities');
+            moreBtnContainer.appendChild(moreBtn);
+        }
+
+        // 1.5 อัปเดตในหน้าศูนย์รวมกิจกรรมทั้งหมด (All Activities View) - แสดงครบทุกข่าวไม่จำกัด
+        const allActivitiesList = document.getElementById('all-activities-news-list');
+        allActivitiesList.innerHTML = '';
+        sortedNews.forEach(item => {
+            const actualIndex = news.indexOf(item);
+            const card = createNewsCardElement(item, actualIndex);
+            allActivitiesList.appendChild(card);
+        });
+
+        // 2. อัปเดตรูปภาพและข้อมูลผู้บริหาร
+        const dirImgContainer = document.getElementById('dynamic-dir-img-container');
+        if (config.dirImg) {
+            dirImgContainer.innerHTML = `<img src="${config.dirImg}" class="director-img" alt="รูปภาพผู้บริหาร">`;
+        } else {
+            dirImgContainer.innerHTML = `<div class="director-img">รูปภาพ</div>`;
+        }
+
+        document.querySelectorAll('.dynamic-school-name').forEach(el => el.innerText = config.schoolName);
+        document.querySelector('.dynamic-hero-title').innerText = config.heroTitle;
+        document.querySelector('.dynamic-hero-desc').innerText = config.heroDesc;
+        document.querySelector('.dynamic-ita-intro').innerText = config.itaIntro;
+        document.querySelector('.dynamic-dir-name').innerText = config.dirName;
+        document.querySelector('.dynamic-dir-pos').innerHTML = config.dirPos.replace(/\n/g, '<br>');
+
+        // 3. ใส่ข้อมูลเดิมเข้าฟอร์มในหน้าหลังบ้าน
+        document.getElementById('edit-school-name').value = config.schoolName;
+        document.getElementById('edit-hero-title').value = config.heroTitle;
+        document.getElementById('edit-hero-desc').value = config.heroDesc;
+        document.getElementById('edit-ita-intro').value = config.itaIntro;
+        document.getElementById('edit-dir-name').value = config.dirName;
+        document.getElementById('edit-dir-pos').value = config.dirPos;
+        
+        const dirPreview = document.getElementById('edit-dir-img-preview');
+        if (config.dirImg) {
+            dirPreview.src = config.dirImg;
+            dirPreview.style.display = 'block';
+            uploadedDirImageBase64 = config.dirImg; 
+        } else {
+            dirPreview.style.display = 'none';
+            dirPreview.src = '';
+            uploadedDirImageBase64 = '';
+        }
+
+        // 4. วาดตารางจัดการข่าวสารหลังบ้านแอดมิน (แสดงครบทั้งหมดเพื่อให้ลบ/แก้ไขได้ง่าย)
+        const adminNewsBody = document.getElementById('admin-news-table-body');
+        adminNewsBody.innerHTML = '';
+        
+        news.forEach((item, index) => {
+            const tr = document.createElement('tr');
+            const thumbImg = item.img 
+                ? `<img src="${item.img}" style="width:90px; height:60px; object-fit:cover; border-radius:4px; border:1px solid #ccc;">`
+                : `<div style="width:90px; height:60px; background:#cbd5e1; border-radius:4px; font-size:11px; display:flex; align-items:center; justify-content:center; color:#475569;">No Image</div>`;
+
+            tr.innerHTML = `
+                <td style="vertical-align:top;">${thumbImg}</td>
+                <td>
+                    <strong style="color:var(--primary-color); font-size:15px;">${item.title}</strong>
+                    <div style="font-size:13px; color:#555; margin-top:5px; max-height:40px; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${item.desc || ''}</div>
+                </td>
+                <td style="text-align:center; vertical-align:middle;">
+                    <button class="btn-action edit" onclick="openNewsForm(${index})">แก้ไข</button>
+                    <button class="btn-action delete" onclick="deleteNewsItem(${index})">ลบ</button>
+                </td>
+            `;
+            adminNewsBody.appendChild(tr);
+        });
+    }
+
+    // ฟังก์ชันช่วยสร้าง HTML Card ของข่าวสาร รองรับระบบคลิกเปิดอ่าน Modal เต็มหน้าจอ
+    function createNewsCardElement(item, actualIndex) {
+        const card = document.createElement('div');
+        card.className = 'news-item-card';
+        card.onclick = () => openNewsReaderModal(actualIndex);
+        
+        const imgTag = item.img 
+            ? `<img src="${item.img}" class="news-card-img" alt="ภาพกิจกรรม">` 
+            : `<div class="news-card-img" style="display:flex;align-items:center;justify-content:center;color:#888;font-size:12px;background:#e2e8f0;flex-shrink:0;">ไม่มีภาพประกอบ</div>`;
+
+        card.innerHTML = `
+            ${imgTag}
+            <div class="news-card-content">
+                <h3>${item.title}</h3>
+                <p>${item.desc ? item.desc : 'ไม่มีรายละเอียดข้อความเพิ่มเติม'}</p>
+            </div>
+        `;
+        return card;
+    }
+
+    // ฟังก์ชันเปิด Pop-up Modal อ่านข่าวสารฉบับเต็มและดูรูปขนาดใหญ่
+    function openNewsReaderModal(index) {
+        const news = JSON.parse(localStorage.getItem('news_data')) || [];
+        const selected = news[index];
+        if (!selected) return;
+
+        document.getElementById('modal-news-title').innerText = selected.title;
+        document.getElementById('modal-news-desc').innerText = selected.desc || 'ไม่มีรายละเอียดข้อความเพิ่มเติม';
+        
+        const imageArea = document.getElementById('modal-image-area');
+        if (selected.img) {
+            imageArea.innerHTML = `<img src="${selected.img}" class="modal-full-img" alt="รูปภาพกิจกรรมเต็มจอ">`;
+        } else {
+            imageArea.innerHTML = ''; 
+        }
+
+        document.getElementById('news-reader-modal').style.display = 'flex';
+    }
+
+    // ฟังก์ชันปิด Modal เมื่อคลิกด้านนอกกล่องสีขาว
+    function closeNewsModal(event) {
+        if (event.target.id === 'news-reader-modal') {
+            document.getElementById('news-reader-modal').style.display = 'none';
+        }
+    }
+
+    /* ======================================================== */
+    /* ฟังก์ชันเด่น: บีบอัดและลดขนาดภาพเพื่อประหยัดพื้นที่คลังข้อมูล (Fix Bug)  */
+    /* ======================================================== */
+    function processAndPreviewImage(event, type) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                // คำนวณอัตราส่วนเพื่อย่อขนาดให้ความกว้างสูงสุดไม่เกิน 800px (ขนาดกำลังคมชัดและไฟล์เล็กมาก)
+                const maxWidth = 800;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+
+                // สั่งวาดรูปลง HTML5 Canvas เพื่อทำการแปลงและลด Quality % ลง
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // บีบอัดภาพให้ออกมาเป็น JPEG ที่ระดับคุณภาพ 75%
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
+
+                if (type === 'news') {
+                    uploadedImageBase64 = compressedBase64;
+                    const previewImg = document.getElementById('news-img-preview');
+                    previewImg.src = compressedBase64;
+                    previewImg.style.display = "block";
+                } else if (type === 'director') {
+                    uploadedDirImageBase64 = compressedBase64;
+                    const previewImg = document.getElementById('edit-dir-img-preview');
+                    previewImg.src = compressedBase64;
+                    previewImg.style.display = "block";
+                }
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // แอดมิน: บันทึกข้อมูลโรงเรียนและผู้บริหาร
+    function saveSchoolInfo() {
+        const updatedConfig = {
+            schoolName: document.getElementById('edit-school-name').value.trim(),
+            heroTitle: document.getElementById('edit-hero-title').value.trim(),
+            heroDesc: document.getElementById('edit-hero-desc').value.trim(),
+            itaIntro: document.getElementById('edit-ita-intro').value.trim(),
+            dirName: document.getElementById('edit-dir-name').value.trim(),
+            dirPos: document.getElementById('edit-dir-pos').value.trim(),
+            dirImg: uploadedDirImageBase64 
+        };
+
+        localStorage.setItem('text_config', JSON.stringify(updatedConfig));
+        updateUIElements();
+        document.getElementById('edit-dir-img-input').value = "";
+        alert("💾 บันทึกข้อมูลสถานศึกษาและโปรไฟล์ผู้บริหารเรียบร้อยแล้ว!");
+    }
+
+    function openNewsForm(index) {
+        document.getElementById('news-form-block').style.display = 'block';
+        document.getElementById('edit-news-index').value = index;
+        document.getElementById('news-img-input').value = "";
+
+        if (index === -1) {
+            document.getElementById('form-action-title').innerText = "➕ เพิ่มข่าวประชาสัมพันธ์ใหม่";
+            document.getElementById('news-title-input').value = "";
+            document.getElementById('news-desc-input').value = "";
+            document.getElementById('news-img-preview').style.display = "none";
+            document.getElementById('news-img-preview').src = "";
+            uploadedImageBase64 = "";
+        } else {
+            document.getElementById('form-action-title').innerText = "📝 แก้ไขข้อมูลข่าวประชาสัมพันธ์";
+            const news = JSON.parse(localStorage.getItem('news_data'));
+            const currentItem = news[index];
+            
+            document.getElementById('news-title-input').value = currentItem.title;
+            document.getElementById('news-desc-input').value = currentItem.desc || "";
+            
+            if (currentItem.img) {
+                document.getElementById('news-img-preview').src = currentItem.img;
+                document.getElementById('news-img-preview').style.display = "block";
+                uploadedImageBase64 = currentItem.img;
+            } else {
+                document.getElementById('news-img-preview').style.display = "none";
+                document.getElementById('news-img-preview').src = "";
+                uploadedImageBase64 = "";
+            }
+        }
+        document.getElementById('news-form-block').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function closeNewsForm() {
+        document.getElementById('news-form-block').style.display = 'none';
+        uploadedImageBase64 = "";
+    }
+
+    function saveNewsItem() {
+        const titleText = document.getElementById('news-title-input').value.trim();
+        const descText = document.getElementById('news-desc-input').value.trim();
+        const currentIndex = parseInt(document.getElementById('edit-news-index').value);
+
+        if (titleText === "") {
+            alert("⚠️ กรุณากรอกหัวข้อข่าวสารก่อนบันทึกครับ");
+            return;
+        }
+
+        const news = JSON.parse(localStorage.getItem('news_data')) || [];
+        const newsObject = { title: titleText, desc: descText, img: uploadedImageBase64 };
+
+        if (currentIndex === -1) {
+            news.push(newsObject);
+        } else {
+            news[currentIndex] = newsObject;
+        }
+
+        try {
+            localStorage.setItem('news_data', JSON.stringify(news));
+            updateUIElements();
+            closeNewsForm();
+            alert("💾 บันทึกข้อมูลข่าวสารเรียบร้อยแล้ว!");
+        } catch (error) {
+            alert("❌ ไม่สามารถบันทึกได้เนื่องจากขนาดไฟล์รูปภาพอาจมีขนาดใหญ่เกินความจุจำลองที่เครื่องรับไหว กรุณาลองเลือกรูปภาพอื่นที่มีรายละเอียดน้อยลง หรือลบข่าวประชาสัมพันธ์เก่าๆ บางข่าวออกก่อนครับ");
+        }
+    }
+
+    function deleteNewsItem(index) {
+        if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบข่าวประชาสัมพันธ์หัวข้อนี้?")) {
+            const news = JSON.parse(localStorage.getItem('news_data'));
+            news.splice(index, 1);
+            localStorage.setItem('news_data', JSON.stringify(news));
+            updateUIElements();
+            closeNewsForm();
+        }
+    }
+
+    function switchView(viewName) {
+        document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+        document.getElementById('view-' + viewName).classList.add('active');
+        
+        if (viewName === 'admin' && sessionStorage.getItem('admin_session') !== 'active') {
+            switchView('login');
+        }
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function switchAdminTab(tabName) {
+        document.querySelectorAll('.admin-tab-content').forEach(content => content.style.display = 'none');
+        document.querySelectorAll('.admin-menu-list li').forEach(li => li.classList.remove('active'));
+        
+        document.getElementById('admin-tab-' + tabName).style.display = 'block';
+        event.currentTarget.classList.add('active');
+        closeNewsForm();
+    }
+
+    function handleLogin() {
+        const user = document.getElementById('input-username').value;
+        const pass = document.getElementById('input-password').value;
+        const errorMsg = document.getElementById('login-error-msg');
+
+        if (user === 'nonsang' && pass === 'nonsang100') {
+            sessionStorage.setItem('admin_session', 'active');
+            errorMsg.style.display = 'none';
+            document.getElementById('input-username').value = '';
+            document.getElementById('input-password').value = '';
+            switchView('admin');
+        } else {
+            errorMsg.style.display = 'block';
+        }
+    }
+
+    function handleLogout() {
+        sessionStorage.removeItem('admin_session');
+        switchView('visitor');
+    }
+</script>
+
+</body>
+</html>
